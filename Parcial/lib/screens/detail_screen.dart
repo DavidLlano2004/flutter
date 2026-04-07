@@ -135,16 +135,39 @@ class DetailScreen extends StatelessWidget {
                     ],
                   ),
                   padding: const EdgeInsets.all(20),
-                  child: Image.network(
-                    product.image,
-                    fit: BoxFit.contain,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return const Center(
-                        child: CircularProgressIndicator(color: Colors.indigo),
-                      );
-                    },
-                  ),
+                  child: product.image.isEmpty
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(
+                            Icons.image_outlined,
+                            size: 80,
+                            color: Colors.grey,
+                          ),
+                        )
+                      : Image.network(
+                          product.image,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return const Center(
+                              child: CircularProgressIndicator(color: Colors.indigo),
+                            );
+                          },
+                          errorBuilder: (_, e, s) => Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade200,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.image_outlined,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
                 ),
               ),
             ),

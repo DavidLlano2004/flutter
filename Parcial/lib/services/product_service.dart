@@ -5,12 +5,20 @@ import '../models/product.dart';
 class ProductService {
   static const String _base = 'https://fakestoreapi.com';
 
+  // Productos guardados localmente durante la sesión
+  static final List<Product> _localProducts = [];
+  static int _nextLocalId = 10000;
+
+  List<Product> get localProducts => List.unmodifiable(_localProducts);
+
   Future<List<Product>> getProducts() async {
     try {
       final response = await http.get(Uri.parse('$_base/products'));
       if (response.statusCode == 200) {
         final List data = jsonDecode(response.body);
-        return data.map((json) => Product.fromJson(json)).toList();
+        final apiProducts = data.map((json) => Product.fromJson(json)).toList();
+        // Mostrar productos locales primero
+        return [..._localProducts, ...apiProducts];
       }
       throw Exception('Error al obtener productos: ${response.statusCode}');
     } catch (e) {
@@ -19,6 +27,10 @@ class ProductService {
   }
 
   Future<Product> getProductById(int id) async {
+    // Buscar primero en locales
+    final local = _localProducts.where((p) => p.id == id).firstOrNull;
+    if (local != null) return local;
+
     try {
       final response = await http.get(Uri.parse('$_base/products/$id'));
       if (response.statusCode == 200) {
@@ -31,6 +43,8 @@ class ProductService {
   }
 
   Future<Product> createProduct(Product p) async {
+    Product created;
+
     try {
       final response = await http.post(
         Uri.parse('$_base/products'),
@@ -38,12 +52,30 @@ class ProductService {
         body: jsonEncode(p.toJson()),
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return Product.fromJson(jsonDecode(response.body));
+        // La API puede devolver campos incompletos (sin rating, image, etc.)
+        // Fusionamos con los datos originales para completar los campos faltantes
+        final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+        final mergedJson = {...p.toJson(), ...responseJson};
+        created = Product.fromJson(mergedJson);
+      } else {
+        throw Exception('Error al crear producto: ${response.statusCode}');
       }
-      throw Exception('Error al crear producto: ${response.statusCode}');
-    } catch (e) {
-      throw Exception('No se pudo crear el producto: $e');
+    } catch (_) {
+      // La API falló — guardar localmente con ID temporal
+      created = Product(
+        id: _nextLocalId++,
+        title: p.title,
+        price: p.price,
+        description: p.description,
+        category: p.category,
+        image: p.image,
+        rating: p.rating,
+      );
     }
+
+    // Guardar siempre en lista local para mostrarlo en home
+    _localProducts.insert(0, created);
+    return created;
   }
 
   Future<Product> updateProduct(Product p) async {

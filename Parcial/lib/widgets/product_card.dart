@@ -7,6 +7,12 @@ class ProductCard extends StatelessWidget {
 
   const ProductCard({super.key, required this.product, required this.onTap});
 
+  static Widget _imagePlaceholder() => Container(
+        width: double.infinity,
+        color: Colors.grey.shade200,
+        child: const Icon(Icons.image_outlined, size: 48, color: Colors.grey),
+      );
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -38,29 +44,27 @@ class ProductCard extends StatelessWidget {
                     tag: product.id,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        product.image,
-                        fit: BoxFit.contain,
-                        width: double.infinity,
-                        loadingBuilder: (context, child, progress) {
-                          if (progress == null) return child;
-                          return Center(
-                            child: CircularProgressIndicator(
-                              value: progress.expectedTotalBytes != null
-                                  ? progress.cumulativeBytesLoaded /
-                                      progress.expectedTotalBytes!
-                                  : null,
-                              strokeWidth: 2,
-                              color: Colors.indigo,
+                      child: product.image.isEmpty
+                          ? _imagePlaceholder()
+                          : Image.network(
+                              product.image,
+                              fit: BoxFit.contain,
+                              width: double.infinity,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Center(
+                                  child: CircularProgressIndicator(
+                                    value: progress.expectedTotalBytes != null
+                                        ? progress.cumulativeBytesLoaded /
+                                            progress.expectedTotalBytes!
+                                        : null,
+                                    strokeWidth: 2,
+                                    color: Colors.indigo,
+                                  ),
+                                );
+                              },
+                              errorBuilder: (_, e, s) => _imagePlaceholder(),
                             ),
-                          );
-                        },
-                        errorBuilder: (_, e, s) => const Icon(
-                          Icons.broken_image_outlined,
-                          size: 48,
-                          color: Colors.grey,
-                        ),
-                      ),
                     ),
                   ),
                 ),

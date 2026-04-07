@@ -70,16 +70,21 @@ class _CreateScreenState extends State<CreateScreen> {
                   Text('Producto creado'),
                 ],
               ),
-              content: Text(
-                'El producto fue creado con el ID: ${created.id}',
-                style: const TextStyle(fontSize: 16),
-              ),
               actions: [
-                ElevatedButton(
+                TextButton(
                   onPressed: () {
                     Navigator.pop(ctx);
                     Navigator.pop(context);
                   },
+                  child: const Text('Cerrar'),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                  icon: const Icon(Icons.home),
+                  label: const Text('Ir al inicio'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.indigo,
                     foregroundColor: Colors.white,
@@ -91,7 +96,6 @@ class _CreateScreenState extends State<CreateScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Aceptar'),
                 ),
               ],
             ),
