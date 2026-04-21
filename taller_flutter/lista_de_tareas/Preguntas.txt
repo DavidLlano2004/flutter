@@ -1,0 +1,16 @@
+ 1. val vs var  →  final vs var en Dart
+    final no puede reasignarse (como val). var sí puede.
+ 2. Operador ?: (Elvis)  →  ?? en Dart
+    Retorna el valor de la derecha si la expresión de la izquierda es null.
+    Ej: apellido?.length ?? 0
+ 3. data class  →  En Dart se implementa manualmente:
+    toString(), ==, hashCode y copyWith().
+    Kotlin los genera automáticamente; Dart usa packages como
+    freezed o equatable para lo mismo.
+ 4. Adapter en RecyclerView  →  itemBuilder en ListView.builder
+    En Flutter, ListView.builder llama al itemBuilder por cada
+    elemento visible, pasando el índice. No hay ViewHolder porque
+    Flutter gestiona el reciclado internamente.
+ 5. View Binding vs findViewById  →  No aplica en Flutter
+    Flutter no usa XML. Los widgets se referencian directamente
+    en código Dart mediante variables (ej: _controller, setState).

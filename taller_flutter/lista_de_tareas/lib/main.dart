@@ -1,0 +1,26 @@
+
+import 'package:flutter/material.dart';
+import 'screens/home_screen.dart';
+
+void main() {
+  runApp(const ListaDeTareasApp());
+}
+
+class ListaDeTareasApp extends StatelessWidget {
+  const ListaDeTareasApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Lista de Tareas',
+      debugShowCheckedModeBanner: false,
+    
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+   
+      home: const HomeScreen(),
+    );
+  }
+}
